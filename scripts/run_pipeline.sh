@@ -1,0 +1,7 @@
+python 01_download_main_page_to_html.py
+python 02_link_name_mapping.py
+python 03_download_results_to_html_or_pdf.py
+python 04_judge_scraping.py
+python 05_judge_cleaning.py
+python 06_protocol_pdf_scraping.py
+python 07_protocol_pdf_cleaning.py
