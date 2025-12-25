@@ -1,7 +1,8 @@
 # Web Scraping of ISU Figure Skating Competition Results
+## Project Summary
+This project scrapes International Skating Union (ISU) figure skating competition results from the 2004–2005 season to the 2024–2025 season. For each competition, The scraped dataset includes overall rankings and scores, as well as detailed protocols (scoring sheets that document the score given by each judge for each element) and judges' information. These datasets are used for downstream analysis, such as investigating block judging in figure skating competitions.
 
 ## Quick Start
-This project scrapes International Skating Union (ISU) figure skating competition results from the 2004–2005 season to the 2024–2025 season. For each competition, The scraped dataset includes overall rankings and scores, as well as detailed protocols (scoring sheets that document the score given by each judge for each element) and judges' information. These datasets are used for downstream analysis, such as investigating block judging in figure skating competitions.
 ```
 # 1. Create environment and install dependencies
 python -m venv .env
@@ -18,8 +19,7 @@ Figure skating is a sport in which skaters execute pre-planned technical element
 
 In each season, the ISU holds approximately 18 Level-A competitions, the highest level of international competitions in the sport. These typically include seven Junior Grand Prix (JGP) Series events, six Grand Prix (GP) Series events, the Grand Prix Final (GPF), the Four Continents Championships, the European Championships, the World Championships, and the Junior World Championships. In Olympic seasons, the Olympic Games are also included.
 
-## Web Scraping
-### Data
+## Data
 ISU publicizes the detailed competition results after each competition, including not only final rankings and scores, but also the detailed protocols that document the scores given by each judge for each element. Figure 1 shows the information publicized by ISU for Grand Prix (GP) Canada 2024 (click [here](https://www.isuresults.com/results/season2425/gpcan2024/) to see the original webpage). We can see that for each discipline, ISU discloses
   1. Entries (atheletes participated in the competition); 
   2. Overal ranking and scores; 
@@ -37,7 +37,7 @@ For each competition, all available information is downloaded in HTML or PDF for
   <em>Figure 1: Competition Results Available for GP Canada 2024</em>
 </p>
 
-### Pipeline Overview
+## Pipeline Overview
 run_pipeline.sh executes the following scripts in a sequential order.
 1. 01_download_main_page_to_html.py
     - For each competition URL listed in ``data/links/comp_links.csv``, this script downloads the main results page as an HTML file and stores it under ``data/raw/{comp_name_abbre}/{comp_name_abbre}.html``.
@@ -58,5 +58,24 @@ run_pipeline.sh executes the following scripts in a sequential order.
 Each script generates and saves a log file in the ``logs/`` directory for debugging and sanity checking. The log files from running the full pipeline on all competitions are available upon request. 
 
 To facilitate exploration and understanding of the data structure, a sample raw data folder, which contains outputs for steps 01-04 and 06, is included at ``data/raw/wc2014`` (see the original competition webpage [here](http://results.isu.org/results/wc2014/)). The cleaned datasets produced from running the pipeline on the sample ``data/links/comp_links.csv`` file are also included in ``data/cleaned``.
+
+## Project Structure
+```
+|-- README.md
+|-- data
+|   |-- cleaned
+|   |   |-- judges.pkl # cleaned dataset for judge information (output of step 05)
+|   |   `-- protocols.pkl # cleaned dataset for protocols (output of step 07)
+|   |-- links
+|   |   `-- comp_links.csv # input dataset (a sample list of competition result page URLs; full list available upon request)
+|   `-- raw
+|       `-- wc2014 # a sample raw data folder, which contains outputs for steps 01-04 and 06
+|-- logs # execution logs (available upon request)
+|-- requirements.txt
+|-- screenshots
+|   `-- gpcan.jpg # README figure 1
+`-- scripts # pipeline scripts
+```
+
 
 [^1]: Before the 2011-2013 season, the ice dance had three segments: compulsory dance (CD), original dance (OD) and free dance (FD).
