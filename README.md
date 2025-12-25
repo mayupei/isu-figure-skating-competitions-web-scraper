@@ -64,12 +64,12 @@ To facilitate exploration and understanding of the data structure, a sample raw 
 |-- README.md
 |-- data
 |   |-- cleaned
-|   |   |-- judges.pkl # cleaned dataset for judge information (output of step 05)
-|   |   `-- protocols.pkl # cleaned dataset for protocols (output of step 07)
+|   |   |-- judges.pkl # cleaned dataset for judge information (step 05 output)
+|   |   `-- protocols.pkl # cleaned dataset for protocols (step 07 output)
 |   |-- links
 |   |   `-- comp_links.csv # input dataset (a sample list of competition result page URLs; full list available upon request)
 |   `-- raw
-|       `-- wc2014 # a sample raw data folder, which contains outputs for steps 01-04 and 06
+|       `-- wc2014 # a sample raw data folder, which contains steps 01-04 and step 06 outputs
 |-- logs # execution logs (available upon request)
 |-- requirements.txt
 |-- screenshots
