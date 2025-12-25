@@ -12,18 +12,15 @@ import time
 import fitz
 import pandas as pd
 import utils.pdf_scraping as ut
-from file_paths import DATA_PATH, LOG_PATH
+from file_paths import LOG_PATH, RAW_DATA_PATH
 from tqdm import tqdm
 from utils.cleaning import extract_comp_type_season
-
-LINK_PATH = os.path.join(DATA_PATH, "links")
-OUTPUT_PATH = os.path.join(DATA_PATH, "urls")
 
 
 def extract_all_protocols(dir_name, season):
     """Extract all protocols from the given directory and save them as a pickle file."""
     with open(
-        os.path.join(OUTPUT_PATH, dir_name, "link_name_mapping.json"),
+        os.path.join(RAW_DATA_PATH, dir_name, "link_name_mapping.json"),
         "r",
         encoding="utf-8",
     ) as json_file:
@@ -40,10 +37,10 @@ def extract_all_protocols(dir_name, season):
             and ("_qb_" not in key.lower())
             and ("preliminaryround" not in key.lower())
         ):
-            if not os.path.isfile(os.path.join(OUTPUT_PATH, dir_name, key)):
+            if not os.path.isfile(os.path.join(RAW_DATA_PATH, dir_name, key)):
                 continue
 
-            doc = fitz.open(os.path.join(OUTPUT_PATH, dir_name, key))
+            doc = fitz.open(os.path.join(RAW_DATA_PATH, dir_name, key))
 
             # check if the first page is protocol
             if (not "nation" in doc[0].get_text(sort=True).lower()) and (
@@ -87,7 +84,7 @@ def extract_all_protocols(dir_name, season):
     if len(df_disciplines) > 0:
         df_final = pd.concat(df_disciplines)
 
-        df_final.to_pickle(os.path.join(OUTPUT_PATH, dir_name, "protocols.pkl"))
+        df_final.to_pickle(os.path.join(RAW_DATA_PATH, dir_name, "protocols.pkl"))
 
 
 def main():
@@ -100,9 +97,9 @@ def main():
 
     start = time.time()
 
-    for dir_name in tqdm(os.listdir(OUTPUT_PATH)):
+    for dir_name in tqdm(os.listdir(RAW_DATA_PATH)):
         if os.path.isfile(
-            os.path.join(OUTPUT_PATH, dir_name, "link_name_mapping.json")
+            os.path.join(RAW_DATA_PATH, dir_name, "link_name_mapping.json")
         ):
             _, _, season = extract_comp_type_season(dir_name)
             try:

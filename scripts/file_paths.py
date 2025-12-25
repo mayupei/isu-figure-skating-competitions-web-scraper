@@ -1,2 +1,10 @@
-DATA_PATH = r"C:\Users\mayup\OneDrive - UBC\Judging_Bias_in_Figure_Skating\Data"
-LOG_PATH = r"E:\nerd_on_edge\isu-figure-skating-competitions-web-scraper\logs"
+import os
+
+BASE_PATH = r"E:\nerd_on_edge\isu-figure-skating-competitions-web-scraper"
+
+DATA_PATH = os.path.join(BASE_PATH, "data")
+LINKS_PATH = os.path.join(DATA_PATH, "links", "comp_links.csv")
+RAW_DATA_PATH = os.path.join(DATA_PATH, "raw")
+CLEANED_DATA_PATH = os.path.join(DATA_PATH, "cleaned")
+
+LOG_PATH = os.path.join(BASE_PATH, "logs")

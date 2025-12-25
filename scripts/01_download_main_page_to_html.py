@@ -8,11 +8,8 @@ import time
 
 import pandas as pd
 import requests
-from file_paths import DATA_PATH, LOG_PATH
+from file_paths import LINKS_PATH, LOG_PATH, RAW_DATA_PATH
 from tqdm import tqdm
-
-LINK_PATH = os.path.join(DATA_PATH, "links")
-OUTPUT_PATH = os.path.join(DATA_PATH, "urls")
 
 
 def download_webpage(url, file_path):
@@ -39,7 +36,7 @@ def download_webpage(url, file_path):
 
 def main():
     logging.basicConfig(
-        filename=os.path.join(LOG_PATH, "01_unable_to_download_main_page.log"),
+        filename=os.path.join(LOG_PATH, "01_download_main_page_to_html.log"),
         format="%(asctime)s - %(levelname)s - %(message)s",
         filemode="w",
         level=logging.INFO,
@@ -47,10 +44,10 @@ def main():
 
     start = time.time()
 
-    links = pd.read_csv(os.path.join(LINK_PATH, "comp_links.csv"))
+    links = pd.read_csv(LINKS_PATH)
 
     for link in tqdm(links["links"].tolist()):
-        download_webpage(link, OUTPUT_PATH)
+        download_webpage(link, RAW_DATA_PATH)
 
     end = time.time()
     logging.info("Total time taken: {:.2f} minutes".format((end - start) / 60))

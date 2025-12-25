@@ -3,34 +3,17 @@ This script appends the detailed judge-element-level scores from all competition
 """
 
 import os
+import re
 
 import numpy as np
 import pandas as pd
-from file_paths import DATA_PATH
+from file_paths import CLEANED_DATA_PATH, RAW_DATA_PATH
 from utils.cleaning import (
     extract_comp_type_season,
     extract_discipline,
     extract_program,
     generate_junior_indicator,
 )
-
-INPUT_PATH = os.path.join(DATA_PATH, "urls")
-OUTPUT_PATH = os.path.join(DATA_PATH, "raw")
-JUDGE_COLS = [
-    "j1",
-    "j2",
-    "j3",
-    "j4",
-    "j5",
-    "j6",
-    "j7",
-    "j8",
-    "j9",
-    "j10",
-    "j11",
-    "j12",
-    "j13",
-]
 
 
 def standardize_score(col):
@@ -48,11 +31,12 @@ def standardize_score(col):
 def main():
     ### append all files
     dfs = []
-    for dir_name in os.listdir(INPUT_PATH):
-        if os.path.isfile(os.path.join(INPUT_PATH, dir_name, "protocols.pkl")):
-            df = pd.read_pickle(os.path.join(INPUT_PATH, dir_name, "protocols.pkl"))
-            df["comp"] = dir_name
-            dfs.append(df)
+    for dir_name in os.listdir(RAW_DATA_PATH):
+        if os.path.isfile(os.path.join(RAW_DATA_PATH, dir_name, "protocols.pkl")):
+            df = pd.read_pickle(os.path.join(RAW_DATA_PATH, dir_name, "protocols.pkl"))
+            if not df.empty:
+                df["comp"] = dir_name
+                dfs.append(df)
 
     df = pd.concat(dfs, ignore_index=True)
 
@@ -72,26 +56,18 @@ def main():
     df["deductions"] = df["deductions"].apply(np.abs)
     df["team"] = df["source"].apply(lambda x: "team" in x.lower())
 
-    print(
-        "Check if 'comp', 'discipline', 'program', 'junior', 'team' can uniquely identify a competition."
-    )
-    print(
-        df.groupby(["comp", "discipline", "program", "junior", "team"])["source"]
-        .nunique()
-        .value_counts()
-    )
-
     ### pivot the data and standardize judge scores
-    for col in JUDGE_COLS:
+    judge_cols = [col for col in df.columns if re.search(r"^j\d+$", col)]
+    for col in judge_cols:
         df[col] = pd.to_numeric(
             df[col].astype(str).str.replace(",", "."), errors="coerce"
         )
 
-    id_vars = [col for col in df.columns if col not in JUDGE_COLS]
+    id_vars = [col for col in df.columns if col not in judge_cols]
     df = pd.melt(
         df,
         id_vars=id_vars,
-        value_vars=JUDGE_COLS,
+        value_vars=judge_cols,
         var_name="judge_id",
         value_name="judge_score",
     )
@@ -107,7 +83,7 @@ def main():
     # replace the skater's nation as RUS (Russian) is the nation is OAR and ROC
     df["nation"] = df["nation"].apply(lambda x: "RUS" if x in ("OAR", "ROC") else x)
 
-    df.to_pickle(os.path.join(OUTPUT_PATH, "protocols.pkl"))
+    df.to_pickle(os.path.join(CLEANED_DATA_PATH, "protocols.pkl"))
 
 
 if __name__ == "__main__":

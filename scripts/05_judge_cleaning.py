@@ -6,16 +6,13 @@ import os
 import re
 
 import pandas as pd
-from file_paths import DATA_PATH, LOG_PATH
+from file_paths import CLEANED_DATA_PATH, RAW_DATA_PATH
 from utils.cleaning import (
     extract_comp_type_season,
     extract_discipline,
     extract_program,
     generate_junior_indicator,
 )
-
-INPUT_PATH = os.path.join(DATA_PATH, "urls")
-OUTPUT_PATH = os.path.join(DATA_PATH, "raw")
 
 
 def get_gender(name):
@@ -46,11 +43,12 @@ def first_name_first(name):
 def main():
     ### append all files
     dfs = []
-    for dir_name in os.listdir(INPUT_PATH):
-        if os.path.isfile(os.path.join(INPUT_PATH, dir_name, "judges.pkl")):
-            df = pd.read_pickle(os.path.join(INPUT_PATH, dir_name, "judges.pkl"))
-            df["comp"] = dir_name
-            dfs.append(df)
+    for dir_name in os.listdir(RAW_DATA_PATH):
+        if os.path.isfile(os.path.join(RAW_DATA_PATH, dir_name, "judges.pkl")):
+            df = pd.read_pickle(os.path.join(RAW_DATA_PATH, dir_name, "judges.pkl"))
+            if not df.empty:
+                df["comp"] = dir_name
+                dfs.append(df)
 
     df = pd.concat(dfs, ignore_index=True)
 
@@ -112,7 +110,7 @@ def main():
 
     df_judge["team"] = df_judge["category"].apply(lambda x: "team" in x.lower())
 
-    df_judge.to_pickle(os.path.join(OUTPUT_PATH, "judges.pkl"))
+    df_judge.to_pickle(os.path.join(CLEANED_DATA_PATH, "judges.pkl"))
 
 
 if __name__ == "__main__":

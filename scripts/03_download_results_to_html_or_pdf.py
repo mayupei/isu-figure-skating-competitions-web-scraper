@@ -11,11 +11,8 @@ import time
 
 import pandas as pd
 import requests
-from file_paths import DATA_PATH, LOG_PATH
+from file_paths import LINKS_PATH, LOG_PATH, RAW_DATA_PATH
 from tqdm import tqdm
-
-LINK_PATH = os.path.join(DATA_PATH, "links")
-OUTPUT_PATH = os.path.join(DATA_PATH, "urls")
 
 
 def download_html_or_pdf(root_url, url, dir_path):
@@ -46,7 +43,7 @@ def download_html_or_pdf(root_url, url, dir_path):
 
 def download_all_results_for_one_competition(dir_name, root_url):
     with open(
-        os.path.join(OUTPUT_PATH, dir_name, "link_name_mapping.json"),
+        os.path.join(RAW_DATA_PATH, dir_name, "link_name_mapping.json"),
         "r",
         encoding="utf-8",
     ) as json_file:
@@ -54,14 +51,14 @@ def download_all_results_for_one_competition(dir_name, root_url):
 
     for url in data.keys():
         try:
-            download_html_or_pdf(root_url, url, os.path.join(OUTPUT_PATH, dir_name))
+            download_html_or_pdf(root_url, url, os.path.join(RAW_DATA_PATH, dir_name))
         except Exception as e:
             logging.error(f"Error downloading {root_url} {url}: {e}")
 
 
 def main():
     logging.basicConfig(
-        filename=os.path.join(LOG_PATH, "03_unable_to_download_detailed_results.log"),
+        filename=os.path.join(LOG_PATH, "03_download_results_to_html_or_pdf.log"),
         format="%(asctime)s - %(levelname)s - %(message)s",
         filemode="w",
         level=logging.INFO,
@@ -69,16 +66,16 @@ def main():
 
     start = time.time()
 
-    link = pd.read_csv(os.path.join(LINK_PATH, "comp_links.csv"))
+    link = pd.read_csv(LINKS_PATH)
     link["comp"] = link["links"].apply(lambda x: x.split("/")[-2])
     link_dict = dict()
     for _, row in link.iterrows():
         link_dict[row["comp"]] = row["links"]
 
-    for dir_name in tqdm(os.listdir(OUTPUT_PATH)):
+    for dir_name in tqdm(os.listdir(RAW_DATA_PATH)):
         root_url = link_dict[dir_name]
         if os.path.isfile(
-            os.path.join(OUTPUT_PATH, dir_name, "link_name_mapping.json")
+            os.path.join(RAW_DATA_PATH, dir_name, "link_name_mapping.json")
         ):
             download_all_results_for_one_competition(dir_name, root_url)
 

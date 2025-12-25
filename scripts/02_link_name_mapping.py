@@ -10,7 +10,7 @@ import time
 
 import pandas as pd
 from bs4 import BeautifulSoup
-from file_paths import DATA_PATH, LOG_PATH
+from file_paths import LOG_PATH, RAW_DATA_PATH
 from tqdm import tqdm
 
 
@@ -93,7 +93,7 @@ def generate_link_name(df_text, df_link, file_path):
 
 def main():
     logging.basicConfig(
-        filename=os.path.join(LOG_PATH, "02_unable_to_extract_link_name_mapping.log"),
+        filename=os.path.join(LOG_PATH, "02_link_name_mapping.log"),
         format="%(asctime)s - %(levelname)s - %(message)s",
         filemode="w",
         level=logging.INFO,
@@ -101,9 +101,8 @@ def main():
 
     start = time.time()
 
-    url_path = os.path.join(DATA_PATH, "urls")
-    for dir_name in tqdm(os.listdir(url_path)):
-        folder_path = os.path.join(url_path, dir_name)
+    for dir_name in tqdm(os.listdir(RAW_DATA_PATH)):
+        folder_path = os.path.join(RAW_DATA_PATH, dir_name)
 
         if os.path.exists(os.path.join(folder_path, "link_name_mapping.json")):
             continue

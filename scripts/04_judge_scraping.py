@@ -12,10 +12,8 @@ from io import StringIO
 
 import pandas as pd
 from bs4 import BeautifulSoup
-from file_paths import DATA_PATH, LOG_PATH
+from file_paths import LOG_PATH, RAW_DATA_PATH
 from tqdm import tqdm
-
-OUTPUT_PATH = os.path.join(DATA_PATH, "urls")
 
 RENAME_COLS = {"Nat.": "Nation"}
 
@@ -32,7 +30,7 @@ def match_conditions(tag):
 
 def extract_one_table(dir_name, key):
     soup = BeautifulSoup(
-        open(os.path.join(OUTPUT_PATH, dir_name, key), encoding="utf8"),
+        open(os.path.join(RAW_DATA_PATH, dir_name, key), encoding="utf8"),
         "html.parser",
     )
 
@@ -64,7 +62,7 @@ def extract_one_table(dir_name, key):
 
 def extract_judge_table(dir_name):
     with open(
-        os.path.join(OUTPUT_PATH, dir_name, "link_name_mapping.json"),
+        os.path.join(RAW_DATA_PATH, dir_name, "link_name_mapping.json"),
         "r",
         encoding="utf-8",
     ) as json_file:
@@ -73,7 +71,7 @@ def extract_judge_table(dir_name):
     dfs = []
     for key, value in data.items():
         if "panel of judges" in value.lower() or "officials" in value.lower():
-            if not os.path.isfile(os.path.join(OUTPUT_PATH, dir_name, key)):
+            if not os.path.isfile(os.path.join(RAW_DATA_PATH, dir_name, key)):
                 continue
 
             try:
@@ -87,7 +85,7 @@ def extract_judge_table(dir_name):
     if len(dfs) > 0:
         df_final = pd.concat(dfs)
 
-        df_final.to_pickle(os.path.join(OUTPUT_PATH, dir_name, "judges.pkl"))
+        df_final.to_pickle(os.path.join(RAW_DATA_PATH, dir_name, "judges.pkl"))
 
 
 def main():
@@ -100,9 +98,9 @@ def main():
 
     start = time.time()
 
-    for dir_name in tqdm(os.listdir(OUTPUT_PATH)):
+    for dir_name in tqdm(os.listdir(RAW_DATA_PATH)):
         if os.path.isfile(
-            os.path.join(OUTPUT_PATH, dir_name, "link_name_mapping.json")
+            os.path.join(RAW_DATA_PATH, dir_name, "link_name_mapping.json")
         ):
             try:
                 extract_judge_table(dir_name)
