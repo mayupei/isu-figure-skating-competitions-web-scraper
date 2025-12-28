@@ -17,8 +17,8 @@ from utils.cleaning import (
 
 
 def standardize_score(col):
-    if col.notna().sum() == 0:
-        return col
+    # if col.notna().sum() == 0:
+    #     return col
     mean = np.mean(col)
     std = np.std(col)
 
@@ -72,6 +72,9 @@ def main():
         value_name="judge_score",
     )
 
+    # standardize scores
+    df = df[df["judge_score"].notna()]
+    df = df[~((df["judge_score"] == 0) & (df["component"] == "PCS"))]
     df["judge_score_std"] = df.groupby(
         ["comp", "source", "rank", "element", "element_order"], dropna=False
     )["judge_score"].transform(standardize_score)
