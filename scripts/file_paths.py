@@ -1,6 +1,6 @@
 import os
 
-BASE_PATH = r"E:\nerd_on_edge\isu-figure-skating-competitions-web-scraper"
+BASE_PATH = "[[INSERT YOUR PATH HERE]]"
 
 DATA_PATH = os.path.join(BASE_PATH, "data")
 LINKS_PATH = os.path.join(DATA_PATH, "links", "comp_links.csv")
