@@ -1,6 +1,6 @@
 # Web Scraping of ISU Figure Skating Competition Results
 ## Project Summary
-This project scrapes International Skating Union (ISU) figure skating competition results from the 2004–2005 through 2024–2025 seasons and produces structured datasets containing overall scores, detailed judging protocols, and judges’ information for downstream analysis (e.g., studying block judging behavior).
+This project scrapes International Skating Union (ISU) figure skating competition results from the 2004–2005 to 2024–2025 seasons and produces structured datasets containing overall scores, detailed judging protocols, and judges’ information for downstream analysis (e.g., studying block judging behavior).
 
 ## Quick Start
 ```
@@ -21,14 +21,14 @@ Figure skating is a sport in which skaters execute pre-planned technical element
 In each season, the ISU holds approximately 18 elite competitions, the highest level of international competitions in the sport. These typically include seven Junior Grand Prix (JGP) Series events, six Grand Prix (GP) Series events, the Grand Prix Final (GPF), the Four Continents Championships, the European Championships, the World Championships, and the Junior World Championships. In Olympic seasons, the Olympic Games are also held, with figure skating competitions conducted under ISU regulations.
 
 ## Data
-ISU publicizes the detailed competition results after each competition, including not only final rankings and scores, but also the detailed protocols that document the scores given by each judge for each element. Figure 1 shows the information publicized by ISU for Grand Prix (GP) Canada 2024 (click [here](https://www.isuresults.com/results/season2425/gpcan2024/) to see the original webpage). We can see that for each discipline, ISU discloses
-  1. Entries (athletes participated in the competition); 
+ISU publicizes the detailed competition results after each competition, including not only final rankings and scores, but also detailed protocols that document the scores given by each judge for each element. Figure 1 shows the information publicized by ISU for Grand Prix (GP) Canada 2024 (click [here](https://www.isuresults.com/results/season2425/gpcan2024/) to see the original webpage). We can see that for each discipline, ISU discloses
+  1. Entries (athletes participating in the competition); 
   2. Overall ranking and scores; 
   3. **Judges' information**; 
   4. Ranking and scores by segments;
   5. **Protocols**.
 
-Among these five components, **judges’ information (3) and protocols (5) are the most informative** (highlighted with a red box in Figure 1). With these two pieces of information, we are able to trace element-level scores given by each judge to each skater by mapping judges' ids between the two sources (see the purple boxes).[^2] In addition, using the protocols, we can also derive higher-level information found in the other components, such as skaters’ nationalities, starting orders, segment rankings and segment scores (see the dashed green boxes). Because judges’ information and protocols already subsume the content of the remaining components, I focus on these two sources for data collection.
+Among these five components, **judges’ information (3) and protocols (5) are the most informative** (highlighted with a red box in Figure 1). With these two pieces of information, we are able to trace element-level scores given by each judge to each skater by mapping judges' IDs between the two sources (see the purple boxes).[^2] In addition, using the protocols, we can also derive higher-level information found in the other components, such as skaters’ nationalities, starting orders, segment rankings and segment scores (see the dashed green boxes). Because judges’ information and protocols already subsume the content of the remaining components, I focus on these two sources for data collection.
 
 For each competition, all available information is downloaded in HTML or PDF formats. Web scraping and PDF extraction techniques are then applied to reconstruct the judges’ information (3) and protocols (5) into structured tabular datasets.
 
@@ -48,11 +48,11 @@ run_pipeline.sh executes the following scripts sequentially.
 3. 03_download_results_to_html_or_pdf.py
     - Using the ``link_name_mapping.json`` constructed in the previous step, this script downloads detailed competition results, protocols and judges' information (the five components described in the Data section) as HTML or PDF files and stores them under the respective competition directories.
 4. 04_judge_scraping.py
-    - This script identifies HTML files that contain judge information based on the ``link_name_mapping.json`` files created in step 02, and extracts judges' information for each competition and saves it as pickled DataFrames in the respective competition directories.
+    - This script identifies HTML files that contain judge information based on the ``link_name_mapping.json`` files created in step 02, and extracts judges' information for each competition and saves them as pickled DataFrames in the respective competition directories.
 5. 05_judge_cleaning.py
     - This script appends and cleans the judges' information from all competitions and stores it under ``data/cleaned/judges.pkl``. To preserve the origin of each record, the script adds contextual identifiers — including competition name, season, discipline (e.g., women), and segment (e.g., short program) — so that every row can be traced back to its source competition, discipline, and segment.
 6. 06_protocol_pdf_scraping.py
-    - This script identifies PDF files that contain the protocols (detailed scoring sheets) based on the ``link_name_mapping.json`` files created in step 02, and extracts detailed element-level scores assigned by each judge for each competition and saves it as pickled DataFrames in the respective competition directories.
+    - This script identifies PDF files that contain the protocols (detailed scoring sheets) based on the ``link_name_mapping.json`` files created in step 02, and extracts detailed element-level scores assigned by each judge for each competition and saves them as pickled DataFrames in the respective competition directories.
 7. 07_protocol_pdf_cleaning.py
     - This script appends and cleans the detailed element-level scores assigned by each judge from all competitions and stores it under ``data/cleaned/protocols.pkl``. To preserve the origin of each record, the script adds contextual identifiers — including competition name, season, discipline (e.g., women), and segment (e.g., short program) — so that every row can be traced back to its source competition, discipline, and segment.
 
@@ -79,5 +79,5 @@ To facilitate exploration and understanding of the data structure, a sample raw 
 ```
 
 
-[^1]: Before the 2011-2013 season, the ice dance had three segments: compulsory dance (CD), original dance (OD) and free dance (FD).
+[^1]: Before the 2011-2013 season, the ice dance had three segments: compulsory dance (CD), original dance (OD), and free dance (FD).
 [^2]: Note that before the 2016–2017 season, the ISU used anonymous judging, and judge IDs were randomized in the protocols. Therefore, we are only able to link judges’ names with their scores for competitions held from the 2016–2017 season onward.
